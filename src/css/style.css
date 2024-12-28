@@ -6,20 +6,18 @@
   @font-face {
     font-family: Akzidenz;
     font-weight: 700;
-    font-style: normal;
-    src: url('/fonts/akzidenz/AkzidenzGroteskPro-BoldEx.otf') format('opentype');
+    src: url("/fonts/akzidenz/AkzidenzGroteskPro-BoldEx.otf") format("opentype");
   }
   @font-face {
     font-family: Akzidenz;
     font-weight: 500;
-    font-style: normal;
-    src: url('/fonts/akzidenz/AkzidenzGroteskPro-Md.otf') format('opentype');
+    src: url("/fonts/akzidenz/AkzidenzGroteskPro-Md.otf") format("opentype");
   }
   @font-face {
     font-family: Akzidenz;
     font-weight: 400;
-    font-style: normal;
-    src: url('/fonts/akzidenz/AkzidenzGroteskPro-Regular.otf') format('opentype');
+    src: url("/fonts/akzidenz/AkzidenzGroteskPro-Regular.otf")
+      format("opentype");
   }
 
   html {
@@ -28,56 +26,89 @@
 }
 
 @layer components {
+  * {
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+      color 0.3s ease;
+  }
+
   #app {
     @apply h-screen flex flex-col justify-center items-center dark:text-white dark:bg-zinc-800;
+    @apply px-4;
   }
-  
+
   .logo {
-    @apply text-2xl sm:text-4xl md:text-5xl font-bold;
-  }
-  .logo-sm {
-    @apply text-xl;
+    @apply text-2xl sm:text-4xl md:text-5xl font-bold text-center mb-12;
+    transition: all 0.4s ease;
   }
 
   .button-primary {
-    @apply flex justify-center items-center bg-slate-200 dark:bg-indigo-500 enabled:dark:hover:bg-indigo-600 enabled:hover:bg-slate-300 rounded-md font-medium px-5 py-2 disabled:opacity-20 disabled:cursor-not-allowed;
+    @apply flex justify-center items-center px-6 py-2.5 rounded-lg font-medium;
+    @apply bg-indigo-600 text-white hover:bg-indigo-700;
+    @apply dark:bg-indigo-500 dark:hover:bg-indigo-600;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply shadow-sm hover:shadow-md;
+    transition: all 0.3s ease;
   }
 
   .button-secondary {
-    @apply border border-black rounded-md hover:bg-slate-100 dark:border-white dark:hover:bg-zinc-600;
+    @apply border rounded-lg px-5 py-2.5;
+    @apply border-black/20 hover:bg-slate-100;
+    @apply dark:border-white/20 dark:hover:bg-zinc-600;
+    transition: all 0.3s ease;
   }
 
-  .placeholders-wrapper {
-    @apply flex flex-row;
+  .word-display {
+    @apply mb-10 flex gap-3;
   }
 
   .letter {
-    @apply mx-2 text-3xl font-medium;
+    @apply text-4xl font-bold text-center w-10 mx-1.5;
   }
 
   .keyboard {
-    @apply max-w-2xl mt-5 flex justify-center flex-wrap;
+    @apply grid grid-cols-7 gap-2.5 max-w-2xl mt-8;
   }
 
-  .keyboard-button {
-    @apply w-10 h-10 sm:w-14 sm:h-14 m-1 sm:m-2;
+  .keyboard-btn {
+    @apply p-2 rounded-lg font-bold cursor-pointer;
+    @apply bg-gray-200/80 hover:bg-gray-300;
+    @apply dark:bg-gray-700/80 dark:hover:bg-gray-600 dark:text-white;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply transition-all duration-200;
+    width: 44px;
+    height: 44px;
   }
 
-  .hangman-img {
-    @apply w-32 h-32 sm:w-60 sm:h-60;
+  .header-buttons {
+    @apply fixed top-6 right-6 flex gap-5;
+  }
+
+  .header-button {
+    @apply p-2.5 rounded-full;
+    @apply bg-gray-200/90 hover:bg-gray-300;
+    @apply dark:bg-gray-700/90 dark:hover:bg-gray-600;
+    @apply transition-all duration-200;
+  }
+
+  .game-over,
+  .game-complete {
+    @apply text-center mt-4 flex flex-col items-center;
   }
 
   .result-header {
-    @apply text-2xl font-bold mt-4;
-  }
-  .result-header.win {
-    @apply text-lime-600;
-  }
-  .result-header.lose {
-    @apply text-red-600;
+    @apply text-2xl font-bold mb-4;
   }
 
-  .result-word {
-    @apply font-medium uppercase;
+  .button-group {
+    @apply flex justify-center gap-4 w-full;
+  }
+
+  .theme-toggle {
+    transform: rotate(0deg);
+    transition: transform 0.5s ease;
+  }
+
+  .theme-toggle.dark {
+    transform: rotate(-120deg);
   }
 }

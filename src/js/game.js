@@ -1,142 +1,272 @@
-import { WORDS, KEYBOARD_LETTERS } from './consts';
+import {
+  ALL_WORDS,
+  KEYBOARD_LETTERS,
+  RUSSIAN_KEYBOARD_LETTERS,
+  RUSSIAN_WORDS,
+  TRANSLATIONS,
+} from "./consts";
 
-const gameDiv = document.getElementById('game');
-const logoH1 = document.getElementById('logo');
+export class WordGame {
+  constructor(difficulty) {
+    const language = sessionStorage.getItem("language") || "english";
+    this.words = language === "russian" ? RUSSIAN_WORDS : ALL_WORDS;
+    this.maxWrongGuesses = 10;
+    this.initialize(difficulty.words);
+  }
 
-let triesLeft;
-let winCount;
+  initialize(wordCount) {
+    this.originalWords = [...this.words]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, wordCount);
 
-const createPlaceholdersHTML = () => {
-  const word = sessionStorage.getItem('word');
-  const wordArray = Array.from(word);
-  const placeholdersHTML = wordArray.reduce(
-    (acc, curr, i) => acc + `<h1 id="letter_${i}" class="letter">_</h1>`,
-    '',
-  );
-  return `<div id="placeholders" class="placeholders-wrapper">${placeholdersHTML}</div>`;
-};
+    if (!this.originalWords.length) {
+      throw new Error("Массив слов пуст");
+    }
 
-const createKeyboard = () => {
-  const keyboard = document.createElement('div');
-  keyboard.classList.add('keyboard');
-  keyboard.id = 'keyboard';
+    this.reset();
+  }
 
-  const keyboardHTML = KEYBOARD_LETTERS.reduce((acc, curr) => {
-    return (
-      acc +
-      `<button class="button-primary keyboard-button" id="${curr}">${curr}</button>`
+  reset() {
+    this.availableWords = [...this.originalWords];
+    this.currentWord = "";
+    this.guessedLetters = new Set();
+    this.wrongGuesses = 0;
+  }
+
+  getNextWord() {
+    if (this.availableWords.length === 0) {
+      this.availableWords = [...this.originalWords];
+    }
+
+    const randomIndex = Math.floor(Math.random() * this.availableWords.length);
+    this.currentWord = this.availableWords[randomIndex].toUpperCase();
+    this.availableWords.splice(randomIndex, 1);
+    this.guessedLetters.clear();
+    this.wrongGuesses = 0;
+
+    return this.currentWord;
+  }
+
+  guessLetter(letter) {
+    letter = letter.toUpperCase();
+    if (this.guessedLetters.has(letter)) return false;
+    this.guessedLetters.add(letter);
+    if (!this.currentWord.includes(letter)) {
+      this.wrongGuesses++;
+      return false;
+    }
+    return true;
+  }
+
+  isGameOver() {
+    return this.wrongGuesses >= this.maxWrongGuesses;
+  }
+
+  hasWon() {
+    return [...this.currentWord].every(letter =>
+      this.guessedLetters.has(letter)
     );
-  }, '');
-
-  keyboard.innerHTML = keyboardHTML;
-  return keyboard;
-};
-
-const createHangmanImg = () => {
-  const image = document.createElement('img');
-  image.src = 'images/hg-0.png';
-  image.alt = 'hangman image';
-  image.classList.add('hangman-img');
-  image.id = 'hangman-img';
-
-  return image;
-};
-
-const checkLetter = (letter) => {
-  const word = sessionStorage.getItem('word');
-  const inputLetter = letter.toLowerCase();
-  // буквы нет в слове
-  if (!word.includes(inputLetter)) {
-    const triesCounter = document.getElementById('tries-left');
-    triesLeft -= 1;
-    triesCounter.innerText = triesLeft;
-
-    const hangmanImg = document.getElementById('hangman-img');
-    hangmanImg.src = `images/hg-${10 - triesLeft}.png`;
-
-    if (triesLeft === 0) {
-      stopGame('lose');
-    }
-  } else {
-    // буква есть
-    const wordArray = Array.from(word);
-    wordArray.forEach((currentLetter, i) => {
-      if (currentLetter === inputLetter) {
-        winCount += 1;
-        if (winCount === word.length) {
-          stopGame('win');
-          return;
-        }
-        document.getElementById(`letter_${i}`).innerText =
-          inputLetter.toUpperCase();
-      }
-    });
   }
-};
+}
 
-const stopGame = (status) => {
-  document.getElementById('placeholders').remove();
-  document.getElementById('tries').remove();
-  document.getElementById('keyboard').remove();
-  document.getElementById('quit').remove();
+function startGame(game) {
+  const gameDiv = document.getElementById("game");
+  const logoH1 = document.getElementById("logo");
 
-  const word = sessionStorage.getItem('word');
+  gameDiv.innerHTML = "";
+  logoH1.classList.add("logo-sm");
 
-  if (status === 'win') {
-    // сценарий выигрыша
-    document.getElementById('hangman-img').src = 'images/hg-win.png';
-    document.getElementById('game').innerHTML +=
-      '<h2 class="result-header win">You won!</h2>';
-  } else if (status === 'lose') {
-    // сценарий проигрыша
-    document.getElementById('game').innerHTML +=
-      '<h2 class="result-header lose">You lost :(</h2>';
-  } else if (status === 'quit') {
-    logoH1.classList.remove('logo-sm');
-    document.getElementById('hangman-img').remove();
-  }
+  const word = game.getNextWord();
 
-  document.getElementById(
-    'game',
-  ).innerHTML += `<p>The word was: <span class="result-word">${word}</span></p><button id="play-again" class="button-primary px-5 py-2 mt-5">Play again</button>`;
-  document.getElementById('play-again').onclick = startGame;
-};
+  const hangmanImg = createHangmanImage();
+  const wordDisplay = createWordDisplay(word);
+  const keyboard = createKeyboard(game);
 
-export const startGame = () => {
-  triesLeft = 10;
-  winCount = 0;
+  gameDiv.appendChild(hangmanImg);
+  gameDiv.appendChild(wordDisplay);
+  gameDiv.appendChild(keyboard);
+}
 
-  logoH1.classList.add('logo-sm');
-  const randomIndex = Math.floor(Math.random() * WORDS.length);
-  const wordToGuess = WORDS[randomIndex];
-  sessionStorage.setItem('word', wordToGuess);
+function createHangmanImage() {
+  const img = document.createElement("img");
+  img.src = "/images/hg-0.png";
+  img.id = "hangman";
+  img.className = "h-48 mb-8";
+  return img;
+}
 
-  gameDiv.innerHTML = createPlaceholdersHTML();
+function createWordDisplay(word) {
+  const wordContainer = document.createElement("div");
+  wordContainer.id = "word";
+  wordContainer.className = "mb-8 flex gap-2";
 
-  gameDiv.innerHTML +=
-    '<p id="tries" class="mt-2">TRIES LEFT: <span id="tries-left" class="font-medium text-red-600">10</span></p>';
-
-  const keyboardDiv = createKeyboard();
-  keyboardDiv.addEventListener('click', (event) => {
-    if (event.target.tagName.toLowerCase() === 'button') {
-      event.target.disabled = true;
-      checkLetter(event.target.id);
-    }
+  word.split("").forEach(() => {
+    const span = document.createElement("span");
+    span.className = "letter text-4xl font-bold";
+    span.textContent = "_";
+    wordContainer.appendChild(span);
   });
 
-  const hangmanImg = createHangmanImg();
-  gameDiv.prepend(hangmanImg);
+  return wordContainer;
+}
 
-  gameDiv.appendChild(keyboardDiv);
+function updateWordDisplay(game) {
+  const wordDisplay = document.getElementById("word");
+  const letters = wordDisplay.getElementsByClassName("letter");
 
-  gameDiv.insertAdjacentHTML(
-    'beforeend',
-    '<button id="quit" class="button-secondary px-2 py-1 mt-4">Quit</button>',
-  );
-  document.getElementById('quit').onclick = () => {
-    const isSure = confirm('Are you sure you want to quit and lose progress?');
-    if (isSure) {
-      stopGame('quit');
+  [...game.currentWord].forEach((letter, index) => {
+    letters[index].textContent = game.guessedLetters.has(letter) ? letter : "_";
+  });
+}
+
+function createKeyboard(game) {
+  const keyboard = document.createElement("div");
+  keyboard.id = "keyboard";
+  keyboard.className = "grid grid-cols-7 gap-2";
+
+  const language = sessionStorage.getItem("language") || "english";
+  const letters =
+    language === "russian" ? RUSSIAN_KEYBOARD_LETTERS : KEYBOARD_LETTERS;
+
+  letters.forEach(letter => {
+    const button = document.createElement("button");
+    button.className = "keyboard-btn bg-gray-200 p-2 rounded hover:bg-gray-300";
+    button.textContent = letter;
+    button.dataset.letter = letter;
+
+    button.addEventListener("click", () => {
+      if (!button.disabled) {
+        handleGuess(letter, game, button);
+      }
+    });
+
+    keyboard.appendChild(button);
+  });
+
+  return keyboard;
+}
+
+function handleGuess(letter, game, button) {
+  button.disabled = true;
+  button.classList.add("opacity-50");
+
+  const isCorrect = game.guessLetter(letter);
+
+  if (!isCorrect) {
+    const hangmanImg = document.getElementById("hangman");
+    hangmanImg.src = `/images/hg-${game.wrongGuesses}.png`;
+  }
+
+  updateWordDisplay(game);
+
+  if (game.hasWon()) {
+    handleWin(game);
+  } else if (game.isGameOver()) {
+    handleLoss(game);
+  }
+}
+
+function handleWin(game) {
+  const hangmanImg = document.getElementById("hangman");
+  hangmanImg.src = "/images/hg-win.png";
+
+  setTimeout(() => {
+    if (game.availableWords.length > 0) {
+      startGame(game);
+    } else {
+      showGameComplete();
     }
-  };
-};
+  }, 1500);
+}
+
+function handleLoss(game) {
+  showGameOver(game.currentWord);
+}
+
+function resetGame() {
+  const difficultySelect = document.querySelector(".difficulty-select");
+  const gameDiv = document.getElementById("game");
+  const logoH1 = document.getElementById("logo");
+
+  if (gameDiv) {
+    gameDiv.innerHTML = "";
+  }
+
+  if (logoH1) {
+    logoH1.classList.remove("logo-sm");
+  }
+
+  if (difficultySelect) {
+    difficultySelect.style.display = "block";
+  } else {
+    window.location.href = "/";
+  }
+}
+
+function showGameOver(word) {
+  const gameDiv = document.getElementById("game");
+  const language = sessionStorage.getItem("language") || "english";
+  const translations = TRANSLATIONS[language];
+
+  gameDiv.innerHTML = `
+        <div class="game-over mt-4 text-center">
+            <img src="/images/hg-10.png" class="h-48 mb-8 mx-auto" alt="Game Over">
+            <h2 class="text-xl mb-2">${translations.youLost}</h2>
+            <p class="mb-4">${translations.theWordWas} ${word}</p>
+            <button id="tryAgainBtn" class="button-primary px-6 py-2">${translations.tryAgain}</button>
+        </div>
+    `;
+
+  document.getElementById("tryAgainBtn").addEventListener("click", resetGame);
+}
+
+function showGameComplete() {
+  const gameDiv = document.getElementById("game");
+  const language = sessionStorage.getItem("language") || "english";
+  const translations = TRANSLATIONS[language];
+
+  gameDiv.innerHTML = `
+        <div class="game-complete text-center">
+            <img src="/images/hg-win.png" class="h-48 mb-8 mx-auto" alt="You Won">
+            <h2 class="text-xl mb-2">${translations.congratulations}</h2>
+            <button id="playAgainBtn" class="button-primary mt-4 px-6 py-2">${translations.playAgain}</button>
+        </div>
+    `;
+
+  document.getElementById("playAgainBtn").addEventListener("click", resetGame);
+}
+
+export function updateDifficultyText() {
+  const language = sessionStorage.getItem("language") || "english";
+  const translations = TRANSLATIONS[language];
+
+  document.querySelector(".difficulty-select h2").textContent =
+    translations.selectDifficulty;
+  document.getElementById("easy").textContent = translations.easy;
+  document.getElementById("medium").textContent = translations.medium;
+  document.getElementById("hard").textContent = translations.hard;
+}
+
+export function initializeGame(difficulty) {
+  const game = new WordGame(difficulty);
+  startGame(game);
+  return game;
+}
+
+export default WordGame;
+
+export function toggleLanguage() {
+  const currentLanguage = sessionStorage.getItem("language") || "english";
+  const newLanguage = currentLanguage === "english" ? "russian" : "english";
+  sessionStorage.setItem("language", newLanguage);
+
+  const languageIcon = document.getElementById("language-icon");
+  if (languageIcon) {
+    languageIcon.src = `/images/${
+      newLanguage === "english" ? "uk-flag" : "ru-flag"
+    }.png`;
+    languageIcon.alt = newLanguage === "english" ? "English" : "Русский";
+  }
+
+  window.location.reload();
+}
