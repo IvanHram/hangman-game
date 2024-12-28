@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hangman Game</title>
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/hangman-game/favicon/favicon-32x32.png"
+    />
+
+    <link rel="preload" href="/hangman-game/images/hg-0.png" as="image" />
+    <link rel="preload" href="/hangman-game/images/hg-win.png" as="image" />
+    <script type="module" crossorigin src="/hangman-game/assets/index-8ec9e347.js"></script>
+    <link rel="stylesheet" href="/hangman-game/assets/index-069b58c8.css">
+  </head>
+  <body>
+    <div id="app">
+      <div class="header-buttons">
+        <button
+          class="header-button"
+          id="theme-toggle"
+          aria-label="Toggle theme"
+        >
+          <div class="theme-toggle">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </div>
+        </button>
+        <button id="language-toggle" class="header-button">
+          <img
+            id="language-icon"
+            src="/hangman-game/images/uk-flag.png"
+            alt="English"
+            class="w-6 h-6 rounded"
+          />
+        </button>
+      </div>
+      <h1 id="logo" class="logo">[ HANGMAN GAME ]</h1>
+      <div id="game" class="mt-10 flex flex-col items-center">
+        <div class="difficulty-select mb-4">
+          <h2 class="text-xl mb-2">Select difficulty:</h2>
+          <div class="flex gap-2">
+            <button id="easy" class="button-primary">Easy (10 words)</button>
+            <button id="medium" class="button-primary">
+              Medium (25 words)
+            </button>
+            <button id="hard" class="button-primary">Hard (50 words)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </body>
+</html>
