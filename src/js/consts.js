@@ -532,7 +532,6 @@ export const RUSSIAN_WORDS = [
   "бабуся",
   "байкер",
   "бакаут",
-  "бализм",
   "бально",
   "бандал",
   "банджо",
@@ -794,5 +793,5 @@ export const TRANSLATIONS = {
 
 export const BASE_PATH =
   process.env.NODE_ENV === "production"
-    ? "/ваше-имя-репозитория" // Замените на имя вашего репозитория
+    ? "/hangman-game" // Обновлено на hangman-game
     : "";
