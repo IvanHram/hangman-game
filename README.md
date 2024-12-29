@@ -1,4 +1,3 @@
-````markdown
 # Hangman Game
 
 ## Description / Описание
@@ -42,7 +41,9 @@ npm run dev
 
 ![English / Английский](./screenshots/english.png)
 ![Russian / Русский](./screenshots/russian.png)
-
 ![Game / Игра](./screenshots/game.png)
 ![Game over / Игра окончена](./screenshots/game-over.png)
-````
+
+```
+
+```
