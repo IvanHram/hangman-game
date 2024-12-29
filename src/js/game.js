@@ -90,7 +90,7 @@ function startGame(game) {
 
 function createHangmanImage() {
   const img = document.createElement("img");
-  img.src = `${BASE_PATH}/images/hg-0.png`;
+  img.src = "/images/hg-0.png";
   img.id = "hangman";
   img.className = "h-48 mb-8";
   return img;
@@ -155,7 +155,7 @@ function handleGuess(letter, game, button) {
 
   if (!isCorrect) {
     const hangmanImg = document.getElementById("hangman");
-    hangmanImg.src = `${BASE_PATH}/images/hg-${game.wrongGuesses}.png`;
+    hangmanImg.src = `/images/hg-${game.wrongGuesses}.png`;
   }
 
   updateWordDisplay(game);
@@ -200,7 +200,7 @@ function resetGame() {
   if (difficultySelect) {
     difficultySelect.style.display = "block";
   } else {
-    window.location.href = "/";
+    window.location.replace(`${BASE_PATH}/`);
   }
 }
 
@@ -263,7 +263,7 @@ export function toggleLanguage() {
 
   const languageIcon = document.getElementById("language-icon");
   if (languageIcon) {
-    languageIcon.src = `${BASE_PATH}/images/${
+    languageIcon.src = `/images/${
       newLanguage === "english" ? "uk-flag" : "ru-flag"
     }.png`;
     languageIcon.alt = newLanguage === "english" ? "English" : "Русский";
