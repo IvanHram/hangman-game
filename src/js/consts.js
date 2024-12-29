@@ -793,5 +793,5 @@ export const TRANSLATIONS = {
 
 export const BASE_PATH =
   process.env.NODE_ENV === "production"
-    ? "/hangman-game" // Обновлено на hangman-game
+    ? "/hangman-game" 
     : "";
