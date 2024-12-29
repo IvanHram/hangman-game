@@ -524,7 +524,6 @@ export const RUSSIAN_WORDS = [
   "аскари",
   "атриум",
   "аудиал",
-  "афанит",
   "афория",
   "аффера",
   "ачарья",
@@ -792,3 +791,8 @@ export const TRANSLATIONS = {
     quitConfirm: "Вы уверены, что хотите выйти и потерять прогресс?",
   },
 };
+
+export const BASE_PATH =
+  process.env.NODE_ENV === "production"
+    ? "/ваше-имя-репозитория" // Замените на имя вашего репозитория
+    : "";

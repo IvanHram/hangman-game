@@ -1,5 +1,6 @@
 import {
   ALL_WORDS,
+  BASE_PATH,
   KEYBOARD_LETTERS,
   RUSSIAN_KEYBOARD_LETTERS,
   RUSSIAN_WORDS,
@@ -89,7 +90,7 @@ function startGame(game) {
 
 function createHangmanImage() {
   const img = document.createElement("img");
-  img.src = "/images/hg-0.png";
+  img.src = `${BASE_PATH}/images/hg-0.png`;
   img.id = "hangman";
   img.className = "h-48 mb-8";
   return img;
@@ -154,7 +155,7 @@ function handleGuess(letter, game, button) {
 
   if (!isCorrect) {
     const hangmanImg = document.getElementById("hangman");
-    hangmanImg.src = `/images/hg-${game.wrongGuesses}.png`;
+    hangmanImg.src = `${BASE_PATH}/images/hg-${game.wrongGuesses}.png`;
   }
 
   updateWordDisplay(game);
@@ -262,7 +263,7 @@ export function toggleLanguage() {
 
   const languageIcon = document.getElementById("language-icon");
   if (languageIcon) {
-    languageIcon.src = `/images/${
+    languageIcon.src = `${BASE_PATH}/images/${
       newLanguage === "english" ? "uk-flag" : "ru-flag"
     }.png`;
     languageIcon.alt = newLanguage === "english" ? "English" : "Русский";
